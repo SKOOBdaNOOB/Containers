@@ -1,0 +1,28 @@
+version: '3'
+
+services:
+  freshrss:
+    image: 'freshrss/freshrss'
+    container_name: freshrss
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      - proxy
+    environment:
+      - 'CRON_MIN=4,34'
+      - '${TZ}'
+    volumes:
+      - "./data:/var/www/FreshRSS/data"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.freshrss.rule=Host(`${TRAEFIK_DOMAIN}`)"
+      - "traefik.http.routers.freshrss.entrypoints=https"
+      - "traefik.http.routers.freshrss.tls=true"
+      - "traefik.http.routers.freshrss.tls.certresolver=cloudflare"
+      # Watchtower Update
+      - "com.centurylinklabs.watchtower.enable=true"
+
+networks:
+  proxy:
+    external: true

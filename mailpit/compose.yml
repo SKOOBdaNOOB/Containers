@@ -1,0 +1,39 @@
+version: '2.4'
+
+services:
+  mailpit:
+    image: axllent/mailpit
+    container_name: mailpit
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      - proxy
+      - mailpit-bridge
+    ports:
+      - 1025:1025
+    environment:
+      MP_MAX_MESSAGES: 5000
+      MP_DATA_FILE: /data/mailpit.db
+      MP_SMTP_AUTH_ACCEPT_ANY: 1
+      MP_SMTP_AUTH_ALLOW_INSECURE: 1
+    volumes:
+      - ./data:/data
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.mailpit.entrypoints=http"
+      - "traefik.http.routers.mailpit.rule=Host(`${TRAEFIK_DOMAIN}`)"
+      - "traefik.http.middlewares.mailpit-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.routers.mailpit.middlewares=mailpit-https-redirect"
+      - "traefik.http.routers.mailpit-secure.entrypoints=https"
+      - "traefik.http.routers.mailpit-secure.rule=Host(`${TRAEFIK_DOMAIN}`)"
+      - "traefik.http.routers.mailpit-secure.tls=true"
+      - "traefik.http.routers.mailpit-secure.service=mailpit"
+      - "traefik.http.services.mailpit.loadbalancer.server.port=8025"
+      - "traefik.docker.network=proxy"
+
+networks:
+  proxy:
+    external: true
+  mailpit-bridge:
+    driver: bridge

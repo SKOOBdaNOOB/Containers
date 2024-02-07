@@ -1,0 +1,81 @@
+http:
+ #region routers 
+  routers:
+    pihole:
+      entryPoints:
+        - "https"
+      rule: "Host(`dns.local.example.com`)"
+      middlewares:
+        - redirectregex-pihole
+        - default-headers
+        - addprefix-pihole
+        - https-redirectscheme
+      tls: {}
+      service: pihole
+    homeassistant:
+      entryPoints:
+        - "https"
+      rule: "Host(`homeassistant.local.example.com`)"
+      middlewares:
+        - default-headers
+        - https-redirectscheme
+      tls: {}
+      service: homeassistant
+    unifi:
+      entryPoints:
+        - "https"
+      rule: "Host(`unifi.local.example.com`)"
+      middlewares:
+        - default-headers
+        - https-redirectscheme
+      tls: {}
+      service: unifi
+#endregion
+#region services
+  services:
+    pihole:
+      loadBalancer:
+        servers:
+          - url: "http://10.0.14.65:80"
+        passHostHeader: true
+    homeassistant:
+      loadBalancer:
+        servers:
+          - url: "http://10.0.11.125:8123"
+        passHostHeader: true
+    unifi:
+      loadBalancer:
+        servers:
+          - url: "https://10.0.14.150"
+        passHostHeader: true
+#endregion
+  middlewares:
+    addprefix-pihole:
+      addPrefix:
+        prefix: "/admin"
+    https-redirectscheme:
+      redirectScheme:
+        scheme: https
+        permanent: true
+    redirectregex-pihole:
+      redirectRegex:
+        regex: /admin/$
+        replacement: /
+
+    default-headers:
+      headers:
+        frameDeny: true
+        browserXssFilter: true
+        contentTypeNosniff: true
+        forceSTSHeader: true
+        stsIncludeSubdomains: true
+        stsPreload: true
+        stsSeconds: 15552000
+        customFrameOptionsValue: SAMEORIGIN
+        customRequestHeaders:
+          X-Forwarded-Proto: https
+
+    secured:
+      chain:
+        middlewares:
+        - default-headers

@@ -1,0 +1,65 @@
+version: '3.2'
+
+services:
+  php-dynamic-qrcode:
+    image: giandonatoinverso/php-dynamic-qr-code:latest
+    container_name: qrgen-web
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      - proxy
+      - qrgen-iso
+    environment:
+      TYPE: "docker"
+      BASE_URL: "${TRAEFIK_DOMAIN}"
+      DATABASE_HOST: "php-dynamic-qrcode-db"
+      DATABASE_PORT: "3306"
+      DATABASE_NAME: $MYSQL_DATABASE
+      DATABASE_USER: $MYSQL_USER
+      DATABASE_PASSWORD: $MYSQL_PASSWORD
+      DATABASE_PREFIX: ""
+      DATABASE_CHARSET: "utf8"
+    depends_on:
+      - php-dynamic-qrcode-db
+    volumes:
+      - ./html:/var/www/html/saved_qrcode
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.qrgen.entrypoints=http"
+      - "traefik.http.routers.qrgen.rule=Host(`${TRAEFIK_DOMAIN}`)"
+      - "traefik.http.middlewares.qrgen-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.routers.qrgen.middlewares=qrgen-https-redirect"
+      - "traefik.http.routers.qrgen-secure.entrypoints=https"
+      - "traefik.http.routers.qrgen-secure.rule=Host(`${TRAEFIK_DOMAIN}`)"
+      - "traefik.http.routers.qrgen-secure.tls=true"
+      - "traefik.http.routers.qrgen-secure.service=qrgen"
+      - "traefik.http.services.qrgen.loadbalancer.server.port=80"
+      - "traefik.docker.network=proxy"
+      - "com.centurylinklabs.watchtower.enable=true"
+
+  php-dynamic-qrcode-db:
+    image: giandonatoinverso/php-dynamic-qr-code-db:latest
+    container_name: qrgen-database
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      - qrgen-iso
+    volumes:
+      - ./mysql:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: $MYSQL_ROOT_PASSWORD
+      MYSQL_DATABASE: $MYSQL_DATABASE
+      MYSQL_USER: $MYSQL_USER
+      MYSQL_PASSWORD: $MYSQL_PASSWORD
+
+volumes:
+  mysql:
+  html:
+
+networks:
+  proxy:
+    external: true
+  qrgen-iso:
+    driver: bridge

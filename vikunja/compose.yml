@@ -1,0 +1,68 @@
+version: '3'
+
+services:
+  api:
+    image: vikunja/api
+    container_name: vikunja-api
+    restart: unless-stopped
+    networks:
+      - proxy
+      - vikunja-iso
+    environment:
+      VIKUNJA_DATABASE_HOST: db
+      VIKUNJA_DATABASE_PASSWORD: $MYSQL_PASSWORD
+      VIKUNJA_DATABASE_TYPE: mysql
+      VIKUNJA_DATABASE_USER: $MYSQL_USER
+      VIKUNJA_DATABASE_DATABASE: $MYSQL_DATABASE
+      VIKUNJA_SERVICE_JWTSECRET: $VIKUNJA_SERVICE_JWTSECRET
+      VIKUNJA_SERVICE_FRONTENDURL: $VIKUNJA_SERVICE_FRONTENDURL
+    volumes: 
+      - ./files:/app/vikunja/files
+    depends_on:
+      - db
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.vikunja-api.rule=Host(`${TRAEFIK_DOMAIN}`) && (PathPrefix(`/api/v1`) || PathPrefix(`/dav/`) || PathPrefix(`/.well-known/`))"
+      - "traefik.http.routers.vikunja-api.entrypoints=https"
+      - "traefik.http.routers.vikunja-api.tls.certResolver=acme"
+      # Enable Watchtower
+      - "com.centurylinklabs.watchtower.enable=true"
+
+  frontend:
+    image: vikunja/frontend
+    container_name: vikunja-web
+    restart: unless-stopped
+    networks:
+      - proxy
+      - vikunja-iso
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.vikunja-frontend.rule=Host(`${TRAEFIK_DOMAIN}`)"
+      - "traefik.http.routers.vikunja-frontend.entrypoints=https"
+      - "traefik.http.routers.vikunja-frontend.tls.certResolver=acme"
+      # Enable Watchtower
+      - "com.centurylinklabs.watchtower.enable=true"
+
+  db:
+    image: mariadb:10
+    container_name: vikunja-db
+    restart: unless-stopped
+    networks:
+      - vikunja-iso
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    environment:
+      MYSQL_ROOT_PASSWORD: $MYSQL_ROOT_PASSWORD 
+      MYSQL_USER: $MYSQL_USER
+      MYSQL_PASSWORD: $MYSQL_PASSWORD
+      MYSQL_DATABASE: $MYSQL_DATABASE
+    volumes:
+      - ./mysql:/var/lib/mysql
+    labels:
+      # Enable Watchtower
+      - "com.centurylinklabs.watchtower.enable=true"
+
+networks:
+  proxy:
+    external: true
+  vikunja-iso:
+    external: true

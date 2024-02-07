@@ -1,0 +1,1 @@
+// Add a blank file named "acme.json" to the data folder and give traefik proper rights by running "sudo chmod 600 acme.json"

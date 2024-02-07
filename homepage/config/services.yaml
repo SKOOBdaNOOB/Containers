@@ -1,0 +1,82 @@
+---
+# For configuration options and examples, please see:
+# https://gethomepage.dev/latest/configs/services
+# icons found here https://github.com/walkxcode/dashboard-icons
+
+- Smart Home:
+    - Home Assistant:
+        icon: home-assistant.svg 
+        href: $HOMEPAGE_VAR_HOMEASSISTANT_URL
+        description: Home Assistant 
+        widget:
+          type: homeassistant
+          url: http://x.x.x.x:8123
+          key: "${HOMEPAGE_VAR_HOMEASSISTANT_API}"
+          
+- Personal:
+    - Homebox:
+        icon: homebox.svg 
+        href: https://xample.local.example.com
+        description: Homebox Inventory
+    - Wiki.js:
+        icon: si-wikidotjs-#1976D2
+        href: https://xample.local.example.com
+        description: Homebox Inventory
+
+- Local Administration:
+    - Uptime-Kuma:
+        icon: uptime-kuma.svg 
+        href: $HOMEPAGE_VAR_KUMA_URL
+        description: Systems & Services Health Check
+        widget:
+          type: uptimekuma
+          url: x.x.x.x
+          slug: statuspageslug
+    - Unifi Router:
+        icon: unifi.svg
+        href: $HOMEPAGE_VAR_UNIFI_URL
+        description: Local Unifi Router
+        widget:
+          type: unifi
+          url: https://x.x.x.x
+          username: "${HOMEPAGE_VAR_UNIFI_USER}"
+          password: "${HOMEPAGE_VAR_UNIFI_PASS}"
+          site: Residence 1631 # optional
+    - Pi-hole:
+        icon: pi-hole.svg 
+        href: $HOMEPAGE_VAR_PIHOLE_01_URL
+        description: Main DNS Server
+        widget:
+          type: pihole
+          url: http://x.x.x.x
+          key: "${HOMEPAGE_VAR_PIHOLE_01_API}"
+    - Traefik Proxy:
+        icon: traefik.svg
+        href: $HOMEPAGE_VAR_TRAEFIK_URL
+        description: Internal Proxy
+        widget:
+          type: traefik
+          url: https://x.x.x.x
+          username: "${HOMEPAGE_VAR_TRAEFIK_USER}"
+          password: "${HOMEPAGE_VAR_TRAEFIK_PASS}"
+    - Wazuh:
+        icon: wazuh.svg 
+        href: https://wazuh.home.delisser.dev
+        description: Wazuh SIEM
+    - Dockge:
+        icon: si-uptimekuma-#5CE1E6 
+        href: https://xample.local.example.com
+        description: Docker Compose Manager
+    - Proxmox:
+        icon: proxmox.svg 
+        href: $HOMEPAGE_VAR_PROXMOX_URL
+        description: Proxmox VE
+    - Portainer:
+        icon: portainer.svg 
+        href: $HOMEPAGE_VAR_PORTAINER_URL
+        description: Docker Container Manager
+        widget:
+          type: portainer
+          url: https://x.x.x.x:9000
+          env: 1
+          key: "${HOMEPAGE_VAR_PORTAINER_API}"

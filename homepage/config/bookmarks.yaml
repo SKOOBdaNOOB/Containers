@@ -1,0 +1,36 @@
+---
+# For configuration options and examples, please see:
+# https://gethomepage.dev/latest/configs/bookmarks
+
+- Documentation:
+    - Ansible:
+        - icon: si-ansible-#EE0000
+          href: https://xample.local.example.com/
+    - Homepage:
+        - icon: si-powerpages-#A493E7
+          href: https://xample.local.example.com/
+    - Obsidian Syntax:
+        - icon: obsidian.svg
+          href: https://xample.local.example.com/
+
+- Entertainment:
+    - Crunchyroll:
+        - icon: si-crunchyroll-#F47521
+          href: https://xample.local.example.com/
+    - YouTube:
+        - icon: youtube.svg
+          href: https://xample.local.example.com/
+    - Plex.tv:
+        - icon: plex.svg
+          href: https://xample.local.example.com/
+
+- Tools:
+    - ChatGPT:
+        - icon: si-openai
+          href: https://xample.local.example.com/
+    - Twingate:
+        - icon: twingate.svg
+          href: https://xample.local.example.com/
+    - Twingate:
+        - icon: twingate.svg
+          href: https://xample.local.example.com/

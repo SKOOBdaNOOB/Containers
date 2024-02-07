@@ -1,0 +1,28 @@
+version: '3.3'
+
+services:
+  shlink-webgui:
+    image: shlinkio/shlink-web-client
+    container_name: shlink-web
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      - proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.shlink.entrypoints=http"
+      - "traefik.http.routers.shlink.rule=Host(`${TRAEFIK_DOMAIN}`)"
+      - "traefik.http.middlewares.shlink-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.routers.shlink.middlewares=shlink-https-redirect"
+      - "traefik.http.routers.shlink-secure.entrypoints=https"
+      - "traefik.http.routers.shlink-secure.rule=Host(`${TRAEFIK_DOMAIN}`)"
+      - "traefik.http.routers.shlink-secure.tls=true"
+      - "traefik.http.routers.shlink-secure.service=shlink"
+      - "traefik.http.services.shlink.loadbalancer.server.port=80"
+      - "traefik.docker.network=proxy"
+
+networks:
+  proxy:
+    external: true
+    
